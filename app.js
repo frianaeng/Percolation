@@ -400,11 +400,11 @@ function drawThresholdGraph(samples = lastThresholdSamples, meanValue = lastThre
   const ctx = thresholdGraphContext;
   const width = thresholdGraphCanvas.width;
   const height = thresholdGraphCanvas.height;
-  const axisFont = Math.max(10, Math.min(13, width / 88));
-  const tickFont = Math.max(9, Math.min(11, width / 92));
+  const axisFont = Math.max(18, Math.min(24, width / 48));
+  const tickFont = axisFont;
   const labelFont = Math.max(10, Math.min(13, width / 82));
-  const annotationFont = Math.max(12, Math.min(16, width / 68));
-  const margin = { top: 16, right: 16, bottom: 38, left: 30 };
+  const annotationFont = Math.max(15, Math.min(22, width / 52));
+  const margin = { top: 16, right: 28, bottom: 84, left: 76 };
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
 
@@ -438,26 +438,31 @@ function drawThresholdGraph(samples = lastThresholdSamples, meanValue = lastThre
   ctx.lineTo(width - margin.right, height - margin.bottom);
   ctx.stroke();
 
-  ctx.fillStyle = "#5b564d";
-  ctx.font = `${axisFont}px Avenir Next`;
+  ctx.fillStyle = "#3f3a34";
+  ctx.font = `700 ${axisFont}px Avenir Next`;
   ctx.textAlign = "center";
-  ctx.fillText("open-site fraction p", margin.left + plotWidth / 2, height - 8);
+  ctx.fillText("open-site fraction p", margin.left + plotWidth / 2, height - 20);
 
   ctx.save();
-  ctx.translate(12, margin.top + plotHeight / 2);
+  ctx.translate(28, margin.top + plotHeight / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillText("P(percolates)", 0, 0);
   ctx.restore();
 
   ctx.textAlign = "right";
-  ctx.fillText("0", margin.left - 8, height - margin.bottom + 4);
+  ctx.fillText("0", margin.left - 16, height - margin.bottom + 4);
   ctx.fillText("1", margin.left - 10, margin.top + 4);
 
   ctx.textAlign = "center";
   ctx.font = `${tickFont}px Menlo`;
   for (let i = 0; i <= 5; i += 1) {
     const x = margin.left + (plotWidth * i) / 5;
-    ctx.fillText((i / 5).toFixed(1), x, height - margin.bottom + 18);
+    const labelX = i === 0
+      ? x + 16
+      : i === 5
+        ? x - 16
+        : x;
+    ctx.fillText((i / 5).toFixed(1), labelX, height - margin.bottom + 28);
   }
 
   if (!samples.length) {

@@ -19,8 +19,9 @@
       </div>
       <nav class="tab-nav" aria-label="Primary">
         <button id="home-tab" class="tab-button active" type="button" data-tab-target="home" aria-selected="true">Home</button>
-        <button id="visualization-tab" class="tab-button" type="button" data-tab-target="visualization" aria-selected="false">Interactive Visualization</button>
-        <button id="threshold-tab" class="tab-button" type="button" data-tab-target="threshold" aria-selected="false">Threshold</button>
+        <button id="visualization-tab" class="tab-button" type="button" data-tab-target="visualization" aria-selected="false">Demo</button>
+        <button id="threshold-tab" class="tab-button" type="button" data-tab-target="threshold" aria-selected="false">Simulation Visualization</button>
+        <button id="methodology-tab" class="tab-button" type="button" data-tab-target="methodology" aria-selected="false">Methodology and Discussion</button>
         <a class="tab-button tab-link" href="https://github.com/FrianaEngineer/Percolation" target="_blank" rel="noreferrer">Source Code</a>
       </nav>
     </header>
@@ -78,6 +79,34 @@
       </section>
 
       <section class="tab-panel" id="visualization" aria-labelledby="visualization-tab">
+        <article class="info-card demo-explainer">
+          <p class="card-label">What is Percolation?</p>
+          <h2>What is Percolation?</h2>
+          <p>
+            Percolation is a simple way to study how things become connected. Imagine water being
+            poured onto the top of a grid. At first, every square is blocked, so the water cannot
+            move anywhere. When you click a square, that site becomes open. Water can move through
+            open squares that touch each other from above, below, left, or right.
+          </p>
+          <p>
+            In this demo, blue squares are called full. A full square is an open square that is
+            connected to the top row through a chain of other open squares. The system percolates
+            when there is a connected open path from the top row all the way to the bottom row.
+          </p>
+          <p>
+            This model helps us understand connectivity in random systems. For example, it can
+            represent water moving through soil, disease spreading through a population,
+            electricity passing through a material, or information moving through a network.
+          </p>
+          <h3>Try It Yourself</h3>
+          <p>
+            Click squares in the grid to open sites. As you open more squares, watch how separate
+            open areas begin to connect. If an open path reaches from the top of the grid to the
+            bottom, the system percolates. The goal is to see how many open sites it usually takes
+            before a full path forms.
+          </p>
+        </article>
+
         <div class="viz-layout">
           <aside class="control-panel">
             <p class="card-label">Controls</p>
@@ -117,6 +146,11 @@
           </aside>
 
           <section class="viz-card">
+            <div class="mini-note">
+              <strong>How to read the grid:</strong> Black squares are blocked. Open squares are
+              empty. Blue squares are full, meaning they are connected to the top row. When the
+              blue connected region reaches the bottom row, the system percolates.
+            </div>
             <div class="canvas-frame">
               <canvas id="percolation-canvas" width="640" height="640" aria-label="Interactive percolation grid"></canvas>
             </div>
@@ -144,9 +178,24 @@
               deviation, and a 95% confidence interval.
             </p>
             <div class="formula-card">
-              <p><strong>Mean:</strong> μ = (x₁ + x₂ + ... + x<sub>T</sub>) / T</p>
-              <p><strong>Std. dev.:</strong> σ = sqrt( Σ(xᵢ - μ)² / (T - 1) )</p>
-              <p><strong>95% CI:</strong> μ ± 1.96σ / sqrt(T)</p>
+              <h3>Central Limit Theorem Connection</h3>
+              <p>
+                Each trial of the percolation simulation gives a slightly different threshold
+                because the sites are opened randomly. Some trials percolate earlier, and some
+                percolate later.
+              </p>
+              <p>
+                The Central Limit Theorem states that when we repeat a random experiment many
+                times, the average of the results becomes more stable and follows an approximately
+                normal pattern. This means that even though one trial may be random, the average
+                threshold from many trials gives a reliable estimate of the true percolation
+                threshold.
+              </p>
+              <p>
+                Hence, we can use the sample mean and variation from the trials to create a 95%
+                confidence interval. The more trials we run, the more accurate and trustworthy our
+                estimate becomes.
+              </p>
             </div>
           </article>
 
@@ -202,6 +251,11 @@
                   open sites increases across the Monte Carlo trials. The red line marks the
                   estimated threshold.
                 </p>
+                <p class="graph-copy">
+                  The light blue curves represent individual trial-style transitions, showing that
+                  some simulations percolate a little earlier and some a little later. The darker
+                  blue curve summarizes the overall transition pattern across the trials.
+                </p>
                 <div class="graph-frame">
                   <canvas id="threshold-graph" width="760" height="420" aria-label="Percolation threshold graph" style="background: transparent;"></canvas>
                 </div>
@@ -230,6 +284,52 @@
               </article>
             </section>
           </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="methodology" aria-labelledby="methodology-tab">
+        <div class="home-grid methodology-grid">
+          <article class="info-card statement-card">
+            <p class="card-label">Methodology</p>
+            <h2>How the Project Works</h2>
+            <p>
+              This project models percolation on an N-by-N grid. Each site begins blocked. In the
+              demo tab, users open sites directly and the system checks whether a connected path
+              from top to bottom has formed. The implementation uses union-find connectivity to
+              track both percolation and fullness efficiently.
+            </p>
+          </article>
+
+          <article class="info-card">
+            <p class="card-label">Simulation</p>
+            <h3>Monte Carlo Approach</h3>
+            <p>
+              To estimate the threshold, the program repeatedly opens random blocked sites until
+              the system percolates. The fraction of open sites at that moment is recorded as one
+              experimental estimate. Repeating this many times produces a distribution of
+              threshold estimates.
+            </p>
+          </article>
+
+          <article class="info-card">
+            <p class="card-label">Statistics</p>
+            <h3>Why Repetition Matters</h3>
+            <p>
+              The sample mean provides an estimate of the percolation threshold, while the sample
+              standard deviation measures how much the trials vary. The 95% confidence interval
+              gives a reasonable range for the true threshold based on the simulated trials.
+            </p>
+          </article>
+
+          <article class="info-card accent-card">
+            <p class="card-label">Discussion</p>
+            <h3>What the Results Show</h3>
+            <p>
+              The threshold graph highlights a sharp transition: below a certain fraction of open
+              sites, percolation is unlikely; above it, percolation becomes very likely. That
+              steep change is the key phenomenon this project is designed to visualize.
+            </p>
+          </article>
         </div>
       </section>
     </main>

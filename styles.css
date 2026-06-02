@@ -148,6 +148,20 @@ button:disabled {
   padding: 24px;
 }
 
+.demo-explainer {
+  margin-bottom: 18px;
+}
+
+.demo-explainer h2 {
+  margin: 0 0 16px;
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.demo-explainer h3 {
+  margin: 22px 0 10px;
+  font-size: 1.4rem;
+}
+
 .statement-card {
   grid-column: span 7;
   min-height: 280px;
@@ -255,6 +269,17 @@ output {
   align-items: center;
 }
 
+.mini-note {
+  width: min(100%, 688px);
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(101, 181, 228, 0.12);
+  border: 1px solid rgba(23, 23, 23, 0.08);
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .canvas-frame {
   position: relative;
   border-radius: 24px;
@@ -318,6 +343,11 @@ canvas {
 
 .formula-card p + p {
   margin-top: 10px;
+}
+
+.formula-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.3rem;
 }
 
 .threshold-visuals {
