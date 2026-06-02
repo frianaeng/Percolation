@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Percolation Explorer</title>
+  <title>Percolation: Explanation and Demo</title>
   <link rel="stylesheet" href="styles.css?v=20260530">
 </head>
 <body>
@@ -11,10 +11,15 @@
     <header class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Computational Systems</p>
-        <h1>Percolation Explorer</h1>
+        <h1>Percolation: Explanation and Demo</h1>
         <p class="hero-text">
           Explore connected paths in a random grid, interact with the system directly, and estimate
           the percolation threshold with Monte Carlo simulation.
+        </p>
+        <p class="hero-text">
+          This percolation demo and percolation visualization is meant to explain connectivity,
+          the percolation threshold, Monte Carlo simulation, and why union-find percolation and
+          disjoint sets percolation ideas are useful in a data structures percolation project.
         </p>
       </div>
       <nav class="tab-nav" aria-label="Primary">
@@ -76,6 +81,37 @@
             </p>
           </article>
         </div>
+
+        <article class="info-card references-card">
+          <p class="card-label">References and Credits</p>
+          <h2>References and Credits</h2>
+          <p>
+            This page is inspired by the classic percolation programming assignment from
+            Princeton’s Algorithms course, which asks students to estimate the percolation
+            threshold using Monte Carlo simulation.
+          </p>
+          <p>
+            Percolation is also used as a data structures project in UC Berkeley’s CS 61B, where
+            it is connected to disjoint sets / union-find.
+          </p>
+          <p>
+            This website is an independent explanatory/demo page and is not an official Princeton,
+            Berkeley, or CS 61B resource.
+          </p>
+          <p><strong>References:</strong></p>
+          <ul class="references-list">
+            <li>
+              <a href="https://coursera.cs.princeton.edu/algs4/assignments/percolation/specification.php" target="_blank" rel="noreferrer">
+                Princeton Algorithms, Percolation Assignment
+              </a>
+            </li>
+            <li>
+              <a href="https://fa25.datastructur.es/projects/proj3/" target="_blank" rel="noreferrer">
+                UC Berkeley CS 61B, Project 3: Percolation
+              </a>
+            </li>
+          </ul>
+        </article>
       </section>
 
       <section class="tab-panel" id="visualization" aria-labelledby="visualization-tab">
@@ -160,6 +196,23 @@
             </div>
           </section>
         </div>
+
+        <article class="info-card connections-card">
+          <p class="card-label">How the Computer Tracks Connections</p>
+          <h2>How the Computer Tracks Connections</h2>
+          <p>
+            Behind the scenes, the program keeps track of which open sites are connected. When a
+            new site is opened, it is connected to any open neighbors above, below, left, or
+            right. The system percolates when an open site in the bottom row becomes connected to
+            an open site in the top row.
+          </p>
+          <p>
+            A common efficient way to implement this is with union-find, also called disjoint
+            sets. Union-find keeps track of which open sites belong to the same connected
+            component, so the program can quickly tell whether a path from top to bottom has
+            formed.
+          </p>
+        </article>
       </section>
 
       <section class="tab-panel" id="threshold" aria-labelledby="threshold-tab">
