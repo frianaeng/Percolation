@@ -150,6 +150,14 @@ const resultLow = document.getElementById("result-low");
 const resultHigh = document.getElementById("result-high");
 const runThresholdButton = document.getElementById("run-threshold");
 const rerunPreviewButton = document.getElementById("rerun-preview");
+const disjointPrevButton = document.getElementById("disjoint-prev");
+const disjointNextButton = document.getElementById("disjoint-next");
+const disjointPrevSetsButton = document.getElementById("disjoint-prev-sets");
+const disjointNextSetsButton = document.getElementById("disjoint-next-sets");
+const disjointStepLabel = document.getElementById("disjoint-step-label");
+const disjointCurrentOperation = document.getElementById("disjoint-current-operation");
+const disjointCurrentNote = document.getElementById("disjoint-current-note");
+const disjointSetState = document.getElementById("disjoint-set-state");
 
 const canvas = document.getElementById("percolation-canvas");
 const context = canvas.getContext("2d");
@@ -157,6 +165,22 @@ const thresholdCanvas = document.getElementById("threshold-canvas");
 const thresholdContext = thresholdCanvas.getContext("2d");
 const thresholdGraphCanvas = document.getElementById("threshold-graph");
 const thresholdGraphContext = thresholdGraphCanvas.getContext("2d");
+
+const disjointCodeLines = Array.from(document.querySelectorAll(".disjoint-code-line"));
+const disjointResults = {
+  5: document.getElementById("ds-result-5"),
+  6: document.getElementById("ds-result-6"),
+  10: document.getElementById("ds-result-10")
+};
+const disjointEdges = {
+  "0-1": document.getElementById("ds-edge-0-1"),
+  "1-2": document.getElementById("ds-edge-1-2"),
+  "0-4": document.getElementById("ds-edge-0-4"),
+  "3-5": document.getElementById("ds-edge-3-5"),
+  "2-4": document.getElementById("ds-edge-4-2"),
+  "4-6": document.getElementById("ds-edge-4-6"),
+  "3-6": document.getElementById("ds-edge-3-6")
+};
 
 const COLORS = {
   blocked: "#050505",
@@ -190,6 +214,126 @@ const hasThresholdUI = [
   thresholdGraphCanvas,
   thresholdGraphContext
 ].every(Boolean);
+const hasDisjointUI = [
+  disjointPrevButton,
+  disjointNextButton,
+  disjointPrevSetsButton,
+  disjointNextSetsButton,
+  disjointStepLabel,
+  disjointCurrentOperation,
+  disjointCurrentNote,
+  disjointSetState,
+  ...disjointCodeLines,
+  ...Object.values(disjointResults),
+  ...Object.values(disjointEdges)
+].every(Boolean);
+
+const DISJOINT_STEPS = [
+  {
+    lineIndex: 0,
+    operation: "ds = DisjointSets(7)",
+    type: "init",
+    graphEdges: [],
+    sets: [[0], [1], [2], [3], [4], [5], [6]],
+    highlight: [],
+    note: "Every item begins in its own connected component."
+  },
+  {
+    lineIndex: 1,
+    operation: "ds.connect(0, 1)",
+    type: "connect",
+    graphEdges: [[0, 1]],
+    sets: [[0, 1], [2], [3], [4], [5], [6]],
+    highlight: [0, 1],
+    note: "0 and 1 merge into one connected component."
+  },
+  {
+    lineIndex: 2,
+    operation: "ds.connect(1, 2)",
+    type: "connect",
+    graphEdges: [[1, 2]],
+    sets: [[0, 1, 2], [3], [4], [5], [6]],
+    highlight: [1, 2],
+    note: "2 joins the component that already contains 0 and 1."
+  },
+  {
+    lineIndex: 3,
+    operation: "ds.connect(0, 4)",
+    type: "connect",
+    graphEdges: [[0, 4]],
+    sets: [[0, 1, 2, 4], [3], [5], [6]],
+    highlight: [0, 4],
+    note: "4 connects into the same component as 0, 1, and 2."
+  },
+  {
+    lineIndex: 4,
+    operation: "ds.connect(3, 5)",
+    type: "connect",
+    graphEdges: [[3, 5]],
+    sets: [[0, 1, 2, 4], [3, 5], [6]],
+    highlight: [3, 5],
+    note: "3 and 5 form their own separate connected component."
+  },
+  {
+    lineIndex: 5,
+    operation: "ds.isConnected(2, 4): true",
+    type: "check",
+    result: true,
+    graphEdges: [],
+    sets: [[0, 1, 2, 4], [3, 5], [6]],
+    highlight: [2, 4],
+    note: "True because 2 and 4 are in the same set."
+  },
+  {
+    lineIndex: 6,
+    operation: "ds.isConnected(3, 0): false",
+    type: "check",
+    result: false,
+    graphEdges: [],
+    sets: [[0, 1, 2, 4], [3, 5], [6]],
+    highlight: [3, 0],
+    note: "False because 3 and 0 are in different sets."
+  },
+  {
+    lineIndex: 7,
+    operation: "ds.connect(4, 2)",
+    type: "connect-no-change",
+    graphEdges: [[4, 2]],
+    sets: [[0, 1, 2, 4], [3, 5], [6]],
+    highlight: [4, 2],
+    note: "No change because 4 and 2 are already connected."
+  },
+  {
+    lineIndex: 8,
+    operation: "ds.connect(4, 6)",
+    type: "connect",
+    graphEdges: [[4, 6]],
+    sets: [[0, 1, 2, 4, 6], [3, 5]],
+    highlight: [4, 6],
+    note: "6 merges into the larger component containing 0, 1, 2, and 4."
+  },
+  {
+    lineIndex: 9,
+    operation: "ds.connect(3, 6)",
+    type: "connect",
+    graphEdges: [[3, 6]],
+    sets: [[0, 1, 2, 3, 4, 5, 6]],
+    highlight: [3, 6],
+    note: "The two remaining components merge into one full connected set."
+  },
+  {
+    lineIndex: 10,
+    operation: "ds.isConnected(3, 0): true",
+    type: "check",
+    result: true,
+    graphEdges: [],
+    sets: [[0, 1, 2, 3, 4, 5, 6]],
+    highlight: [3, 0],
+    note: "True because everything is now in one connected component."
+  }
+];
+
+let disjointStepIndex = 0;
 
 function scheduleDraw(kind, drawFn) {
   if (kind === "visualization" && pendingVisualizationDraw !== null) {
@@ -243,6 +387,129 @@ function activateTab(targetId) {
       scheduleDraw("threshold", drawThresholdPreview);
     }
   }
+
+  if (targetId === "disjoint-set" && hasDisjointUI) {
+    renderDisjointStep(false);
+  }
+}
+
+function normalizeEdgeKey(a, b) {
+  return a < b ? `${a}-${b}` : `${b}-${a}`;
+}
+
+function visibleDisjointEdges(stepIndex) {
+  const edges = [];
+  for (let i = 0; i <= stepIndex; i += 1) {
+    const step = DISJOINT_STEPS[i];
+    if (step.graphEdges?.length) {
+      step.graphEdges.forEach(([a, b]) => {
+        edges.push(normalizeEdgeKey(a, b));
+      });
+    }
+  }
+  return edges;
+}
+
+function formatOperation(step) {
+  if (typeof step.result !== "boolean") {
+    return `<code>${step.operation}</code>`;
+  }
+
+  const resultClass = step.result ? "result-true" : "result-false";
+  const [label] = step.operation.split(":");
+  return `<code>${label}:</code> <span class="${resultClass}">${step.result}</span>`;
+}
+
+function setsDiffer(previousSets, currentSet) {
+  return !previousSets.some((candidate) =>
+    candidate.length === currentSet.length && candidate.every((value, index) => value === currentSet[index])
+  );
+}
+
+function renderSetChip(setValues, highlightValues, changed) {
+  const highlighted = new Set(highlightValues);
+  const valuesMarkup = setValues
+    .map((value, index) => {
+      const comma = index < setValues.length - 1 ? '<span class="comma">,</span>' : "";
+      const highlightClass = highlighted.has(value) ? " highlight" : "";
+      return `<span class="set-number${highlightClass}">${value}</span>${comma}`;
+    })
+    .join(" ");
+
+  return `
+    <div class="set-chip${changed ? " changed" : ""}">
+      <span class="brace">{</span>
+      ${valuesMarkup}
+      <span class="brace">}</span>
+    </div>
+  `;
+}
+
+function renderDisjointStep(animateCurrent) {
+  if (!hasDisjointUI) {
+    return;
+  }
+
+  const currentStep = DISJOINT_STEPS[disjointStepIndex];
+  const previousStep = DISJOINT_STEPS[Math.max(0, disjointStepIndex - 1)];
+
+  disjointCodeLines.forEach((line, index) => {
+    line.classList.toggle("active", index === currentStep.lineIndex);
+  });
+
+  Object.entries(disjointResults).forEach(([index, element]) => {
+    element.classList.toggle("visible", disjointStepIndex >= Number(index));
+  });
+
+  const visibleEdges = new Set(visibleDisjointEdges(disjointStepIndex));
+  const animatedEdgeKey = animateCurrent && currentStep.graphEdges?.length
+    ? normalizeEdgeKey(currentStep.graphEdges[0][0], currentStep.graphEdges[0][1])
+    : null;
+
+  Object.entries(disjointEdges).forEach(([edgeKey, edgeElement]) => {
+    const shouldShow = visibleEdges.has(edgeKey);
+    edgeElement.classList.remove("edge-new");
+    edgeElement.classList.toggle("visible", shouldShow);
+    edgeElement.style.strokeDasharray = "";
+    edgeElement.style.strokeDashoffset = "";
+
+    if (shouldShow && edgeKey === animatedEdgeKey) {
+      const edgeLength = edgeElement.getTotalLength();
+      edgeElement.style.strokeDasharray = `${edgeLength}`;
+      edgeElement.style.strokeDashoffset = `${edgeLength}`;
+      // Force a restart of the stroke-draw animation when moving forward.
+      void edgeElement.getBoundingClientRect();
+      edgeElement.classList.add("edge-new");
+    }
+  });
+
+  const currentOperationMarkup = formatOperation(currentStep);
+  disjointCurrentOperation.innerHTML = currentOperationMarkup;
+  disjointCurrentNote.textContent = currentStep.note;
+
+  const previousSets = disjointStepIndex === 0 ? [] : previousStep.sets;
+  disjointSetState.innerHTML = currentStep.sets
+    .map((setValues) => renderSetChip(
+      setValues,
+      currentStep.highlight,
+      animateCurrent && currentStep.type === "connect" && setsDiffer(previousSets, setValues)
+    ))
+    .join("");
+
+  disjointStepLabel.textContent = `Step ${disjointStepIndex + 1} of ${DISJOINT_STEPS.length}`;
+  disjointPrevButton.disabled = disjointStepIndex === 0;
+  disjointNextButton.disabled = disjointStepIndex === DISJOINT_STEPS.length - 1;
+  disjointPrevSetsButton.disabled = disjointStepIndex === 0;
+  disjointNextSetsButton.disabled = disjointStepIndex === DISJOINT_STEPS.length - 1;
+}
+
+function goToDisjointStep(nextIndex, animateCurrent = false) {
+  const clampedIndex = Math.max(0, Math.min(DISJOINT_STEPS.length - 1, nextIndex));
+  if (clampedIndex === disjointStepIndex && !animateCurrent) {
+    return;
+  }
+  disjointStepIndex = clampedIndex;
+  renderDisjointStep(animateCurrent);
 }
 
 function resizeCanvasForDisplay(targetCanvas) {
@@ -645,6 +912,43 @@ if (hasThresholdUI) {
   });
 }
 
+if (hasDisjointUI) {
+  disjointPrevButton.addEventListener("click", () => {
+    goToDisjointStep(disjointStepIndex - 1, false);
+  });
+
+  disjointNextButton.addEventListener("click", () => {
+    goToDisjointStep(disjointStepIndex + 1, true);
+  });
+
+  disjointPrevSetsButton.addEventListener("click", () => {
+    goToDisjointStep(disjointStepIndex - 1, false);
+  });
+
+  disjointNextSetsButton.addEventListener("click", () => {
+    goToDisjointStep(disjointStepIndex + 1, true);
+  });
+}
+
+window.addEventListener("keydown", (event) => {
+  if (!hasDisjointUI || !document.getElementById("disjoint-set").classList.contains("active")) {
+    return;
+  }
+
+  const tagName = event.target instanceof HTMLElement ? event.target.tagName : "";
+  if (["INPUT", "TEXTAREA", "SELECT"].includes(tagName)) {
+    return;
+  }
+
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    goToDisjointStep(disjointStepIndex + 1, true);
+  } else if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    goToDisjointStep(disjointStepIndex - 1, false);
+  }
+});
+
 window.addEventListener("resize", () => {
   if (document.getElementById("visualization").classList.contains("active")) {
     drawGrid();
@@ -663,5 +967,8 @@ window.addEventListener("load", () => {
     thresholdPreviewModel = new PercolationModel(Number(thresholdGridSizeInput.value));
     drawThresholdPreview();
     drawThresholdGraph();
+  }
+  if (hasDisjointUI) {
+    renderDisjointStep(false);
   }
 });
