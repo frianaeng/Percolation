@@ -1,5 +1,3 @@
-import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.StdOut;
 public class WeightedQuickUnionUF {
     private int[] parent;   // parent[i] = parent of i
     private int[] size;     // size[i] = number of elements in subtree rooted at i
@@ -107,17 +105,13 @@ public class WeightedQuickUnionUF {
      * @param args the command-line arguments
      */
     public static void main(String[] args) {
-        int n = StdIn.readInt();
-        WeightedQuickUnionUF uf = new WeightedQuickUnionUF(n);
-        while (!StdIn.isEmpty()) {
-            int p = StdIn.readInt();
-            int q = StdIn.readInt();
-            if (uf.find(p) == uf.find(q)) continue;
-            uf.union(p, q);
-            StdOut.println(p + " " + q);
+        if (args.length == 0) {
+            return;
         }
-        StdOut.println(uf.count() + " components");
+
+        int n = Integer.parseInt(args[0]);
+        WeightedQuickUnionUF uf = new WeightedQuickUnionUF(n);
+        System.out.println(uf.count() + " components");
     }
 
 }
-

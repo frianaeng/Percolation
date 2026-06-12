@@ -1,4 +1,3 @@
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     private final int n;
     private final boolean[][] open;
@@ -10,6 +9,9 @@ public class Percolation {
     private final int virtualBottom;
 
     public Percolation(int n){
+        if (n <= 0) {
+            throw new IllegalArgumentException("grid size must be positive");
+        }
         this.n = n;
         this.open= new boolean[n][n];
         this.openSites= 0;
@@ -20,6 +22,7 @@ public class Percolation {
     }
 //this func will open a blocked square in the grid and connect it to any adjacent squares
     public void open(int row, int col) {
+        validate(row, col);
         if (isOpen(row,col)) {
             return;
         }
@@ -49,6 +52,7 @@ public class Percolation {
 
 
     public boolean isOpen(int row, int col){
+        validate(row, col);
         return open[row][col];}
 
     //if its not open then its not full. otherwise connect to virtualTop
@@ -83,6 +87,13 @@ public class Percolation {
            // uf.union(row*n+col, neighborRow*n+neighborCol);
             //seconduf.union(currentIndex, neighborIndex);
 
+        }
+    }
+
+    private void validate(int row, int col) {
+        if (row < 0 || row >= n || col < 0 || col >= n) {
+            throw new IllegalArgumentException(
+                    "row and col must be between 0 and " + (n - 1));
         }
     }
 
